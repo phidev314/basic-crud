@@ -3,23 +3,23 @@ import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom';
 
 const EditUser = () => {
-    const [Name, SetName] = useState("");
-    const [Email, SetEmail] = useState("");
-    const [Gender, SetGender] = useState("Laki-laki");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [gender, setGender] = useState("Laki-laki");
     const navigate = useNavigate();
     const { id } = useParams();
 
     useEffect(() => {
         getUserById();
-    }, []);
+    });
 
     const UpdateUser = async (e) => {
         e.preventDefault();
         try {
             await axios.patch(`http://localhost:8000/users/${id}`, {
-                name: Name,
-                email: Email,
-                gender: Gender
+                name: name,
+                email: email,
+                gender: gender
             });
             navigate("/");
         } catch (error) {
@@ -29,9 +29,9 @@ const EditUser = () => {
 
     const getUserById = async () => {
         const response = await axios.get(`http://localhost:8000/users/${id}`);
-        SetName(response.data.Name);
-        SetEmail(response.data.Email);
-        SetGender(response.data.Gender);
+        setName(response.data.name);
+        setEmail(response.data.email);
+        setGender(response.data.gender);
     }
 
     return (
@@ -44,8 +44,8 @@ const EditUser = () => {
                             <input
                                 type="text"
                                 className="input"
-                                value={Name}
-                                onChange={(e) => SetName(e.target.value)}
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                                 placeholder='Name'
                             />
                         </div>
@@ -56,8 +56,8 @@ const EditUser = () => {
                             <input
                                 type="text"
                                 className="input"
-                                value={Email}
-                                onChange={(e) => SetEmail(e.target.value)}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder='Email'
                             />
                         </div>
@@ -66,8 +66,8 @@ const EditUser = () => {
                         <label className="label">Gender</label>
                         <div className="control">
                             <div className="select is-fullwidth">
-                                <select value={Gender}
-                                    onChange={(e) => SetGender(e.target.value)}>
+                                <select value={gender}
+                                    onChange={(e) => setGender(e.target.value)}>
                                     <option value="Laki-laki">Laki-laki</option>
                                     <option value="Perempuan">Perempuan</option>
                                 </select>

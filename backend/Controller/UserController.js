@@ -1,7 +1,7 @@
 import { response } from "express";
 import User from "../model/UserModel.js"
 
-export const getUsers = async(req, res) => {
+export const getUsers = async (req, res) => {
     try {
         const response = await User.findAll();
         res.status(200).json(response);
@@ -10,7 +10,7 @@ export const getUsers = async(req, res) => {
     }
 }
 
-export const getUsersById = async(req, res) => {
+export const getUsersById = async (req, res) => {
     try {
         const response = await User.findOne({
             where: {
@@ -24,39 +24,46 @@ export const getUsersById = async(req, res) => {
 }
 
 
-export const createUser = async(req, res) => {
+export const createUser = async (req, res) => {
     console.log(req.body)
     try {
-       await User.create(req.body);
-       res.status(201).json({msg: "User Created"});
+        await User.create(req.body);
+        res.status(201).json({ msg: "User Created" });
     } catch (error) {
         console.log(Error.massage);
     }
 }
 
 
-export const updateUser = async(req, res) => {
+export const updateUser = async (req, res) => {
     try {
-       await User.update(req.body,{
-        where:{
-            id: req.params.id
-        }
-       });
-       res.status(200).json({msg: "User Updated"});
+        await User.update(req.body, {
+            where: {
+                id: req.params.id
+            }
+        });
+        res.status(200).json({ msg: "User Updated" });
     } catch (error) {
         console.log(Error.massage);
     }
 }
 
 
-export const deleteUser = async(req, res) => {
+export const deleteUser = async (req, res) => {
     try {
-       await User.delete({
-        where:{
-            id: req.params.id
-        }
-       });
-       res.status(200).json({msg: "User Deleted"});
+        const userId = req.params.id;
+        const findUser = await User.findOne({
+            where: {
+                id: userId
+            }
+        });
+        if (!findUser) return res.status(404).json({ msg: "User Not Found" });
+        await User.destroy({
+            where: {
+                id: userId
+            }
+        });
+        res.status(200).json({ msg: "User Deleted" });
     } catch (error) {
         console.log(Error.massage);
     }
