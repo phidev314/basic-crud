@@ -10,8 +10,19 @@ const EditUser = () => {
     const { id } = useParams();
 
     useEffect(() => {
+        const getUserById = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/users/${id}`);
+                setName(response.data.name);
+                setEmail(response.data.email);
+                setGender(response.data.gender);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
         getUserById();
-    });
+    }, [id]);
 
     const UpdateUser = async (e) => {
         e.preventDefault();
@@ -25,13 +36,6 @@ const EditUser = () => {
         } catch (error) {
             console.log(error);
         }
-    }
-
-    const getUserById = async () => {
-        const response = await axios.get(`http://localhost:8000/users/${id}`);
-        setName(response.data.name);
-        setEmail(response.data.email);
-        setGender(response.data.gender);
     }
 
     return (
