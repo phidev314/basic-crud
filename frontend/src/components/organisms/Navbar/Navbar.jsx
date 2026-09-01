@@ -4,11 +4,13 @@ import { User, LogOut, ShieldCheck } from "lucide-react";
 import { authService } from "../../../services";
 import Button from "../../atoms/Button/Button";
 
+// komponen navbar admin: menyediakan menu navigasi aplikasi, profil admin, dan aksi logout
 const Navbar = ({ className = "" }) => {
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(false); // state toggle menu responsive mobile
   const navigate = useNavigate();
-  const admin = authService.getAdmin();
+  const admin = authService.getAdmin(); // mengambil data admin dari authService
 
+  // menangani proses logout admin (hapus token dari localstorage & redirect ke halaman login)
   const handleLogout = () => {
     authService.logout();
     navigate("/login");
@@ -46,6 +48,9 @@ const Navbar = ({ className = "" }) => {
 
         <div className={`navbar-menu ${isActive ? "is-active" : ""}`}>
           <div className="navbar-start">
+            <Link to="/" className="navbar-item has-text-weight-medium">
+              Lihat Toko
+            </Link>
             <Link to="/dashboard" className="navbar-item">
               Dashboard
             </Link>

@@ -6,11 +6,11 @@ import { ChevronRight, Home } from "lucide-react";
  * Custom Breadcrumbs Component
  *
  * @param {Object} props
- * @param {Array<{ label: string, href?: string, active?: boolean, icon?: React.ComponentType | React.ReactNode }>} props.items - Breadcrumb items
- * @param {string} [props.className] - Additional CSS class names
- * @param {boolean} [props.showHomeIcon=true] - Automatically show Home icon for the first item
- * @param {React.ReactNode} [props.separator] - Custom separator (defaults to Lucide ChevronRight)
- * @param {"card" | "subtle" | "pill"} [props.variant="card"] - Visual appearance style
+ * @param {Array<{ label: string, href?: string, active?: boolean, icon?: React.ComponentType | React.ReactNode }>} props.items - breadcrumb items
+ * @param {string} [props.className] - className tambahan
+ * @param {boolean} [props.showHomeIcon=true] - menampilkan icon home secara default
+ * @param {React.ReactNode} [props.separator] - separator icon
+ * @param {"card" | "subtle" | "pill"} [props.variant="card"] - style tampilan visual
  */
 const Breadcrumbs = ({
   items = [],

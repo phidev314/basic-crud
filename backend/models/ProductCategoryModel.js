@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import db from "../config/Database.js";
 
+// definisi skema tabel product_categories untuk pengelompokan kategori produk
 const ProductCategory = db.define(
   "product_categories",
   {

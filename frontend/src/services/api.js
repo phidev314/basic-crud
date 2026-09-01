@@ -1,10 +1,10 @@
 import axios from "axios";
 
-// Base URL konfigurasi backend API
+// base url konfigurasi backend api
 const API_BASE_URL =
-    process.env.REACT_APP_API_BASE_URL;
+    process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
-// Membuat instance axios dengan konfigurasi default
+// membuat instance axios dengan konfigurasi default
 const api = axios.create({
     baseURL: API_BASE_URL,
     timeout: 10000, // 10 detik timeout
@@ -14,7 +14,7 @@ const api = axios.create({
     },
 });
 
-// Request Interceptor: Menambahkan auth token otomatis jika tersedia
+// request interceptor: menambahkan auth token otomatis jika tersedia & support formdata
 api.interceptors.request.use(
     (config) => {
         const token =
@@ -22,6 +22,12 @@ api.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // jika request data bertipe formdata, biarkan browser menyetel content-type multipart/form-data
+        if (config.data instanceof FormData) {
+            delete config.headers["Content-Type"];
+        }
+
         return config;
     },
     (error) => {
@@ -29,13 +35,13 @@ api.interceptors.request.use(
     }
 );
 
-// Response Interceptor: Menstandarkan penanganan response dan error
+// response interceptor: menstandarkan penanganan response dan error
 api.interceptors.response.use(
     (response) => {
         return response;
     },
     (error) => {
-        // Format pesan error dari response server jika tersedia
+        // format pesan error dari response server jika tersedia
         const customError = {
             status: error.response?.status,
             data: error.response?.data,
@@ -46,7 +52,7 @@ api.interceptors.response.use(
                 "Terjadi kesalahan pada server",
         };
 
-        // Penanganan khusus status 401 (Unauthorized)
+        // penanganan khusus status 401 (unauthorized)
         if (error.response?.status === 401) {
             localStorage.removeItem("token");
             sessionStorage.removeItem("token");
@@ -56,38 +62,38 @@ api.interceptors.response.use(
     }
 );
 
-// Wrapper method untuk mempermudah pemanggilan HTTP requests
+// wrapper method untuk mempermudah pemanggilan http requests
 export const http = {
-    // GET: Mengambil data
+    // get: mengambil data
     get: (url, params = {}, config = {}) => {
         return api.get(url, { params, ...config });
     },
 
-    // POST: Menambahkan data baru
+    // post: menambahkan data baru
     post: (url, data = {}, config = {}) => {
         return api.post(url, data, config);
     },
 
-    // PUT: Memperbarui seluruh data
+    // put: memperbarui seluruh data
     put: (url, data = {}, config = {}) => {
         return api.put(url, data, config);
     },
 
-    // PATCH: Memperbarui sebagian data
+    // patch: memperbarui sebagian data
     patch: (url, data = {}, config = {}) => {
         return api.patch(url, data, config);
     },
 
-    // DELETE: Menghapus data
+    // delete: menghapus data
     delete: (url, config = {}) => {
         return api.delete(url, config);
     },
 
-    // Custom request
+    // custom request
     request: (config = {}) => {
         return api.request(config);
     },
 };
 
-// Export instance api sebagai default dan named export
+// export instance api sebagai default dan named export
 export default api;

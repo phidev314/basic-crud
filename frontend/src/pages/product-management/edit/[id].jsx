@@ -15,7 +15,7 @@ const EditProductPage = () => {
   const [notFound, setNotFound] = useState(false);
 
   const breadcrumbs = [
-    { label: "Home", href: "/dashboard" },
+    { label: "Home", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
     { label: "Product Management", href: "/product-management" },
     { label: `Edit Produk ${id ? `(#${id})` : ""}`, active: true },
@@ -34,6 +34,7 @@ const EditProductPage = () => {
             stock: response.data.stock !== undefined ? response.data.stock : 0,
             categoryId: response.data.categoryId || "",
             description: response.data.description || "",
+            imageUrl: response.data.imageUrl || null,
           });
         } else {
           setNotFound(true);

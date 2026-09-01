@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LogIn, ShieldCheck } from "lucide-react";
 import {
   FormField,
@@ -10,21 +10,23 @@ import {
 } from "../../../components";
 import { authService } from "../../../services";
 
+// halaman login administrator
 const LoginPage = () => {
+  // state form login (email, password, dan status request)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
-  const location = useLocation();
 
-  // Redirect jika sudah login
+  // redirect ke dashboard jika admin sudah login
   useEffect(() => {
     if (authService.isAuthenticated()) {
       navigate("/dashboard", { replace: true });
     }
   }, [navigate]);
 
+  // submit form autentikasi login admin
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email.trim() || !password) {
@@ -35,14 +37,9 @@ const LoginPage = () => {
     try {
       setLoading(true);
       setErrorMsg("");
-      await authService.login({
-        email: email.trim(),
-        password,
-      });
-
-      // Redirect ke halaman sebelumnya jika ada, atau ke /dashboard
-      const origin = location.state?.from?.pathname || "/dashboard";
-      navigate(origin, { replace: true });
+      // kirim request login ke authService
+      await authService.login(email.trim(), password);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login gagal:", error);
       setErrorMsg(
@@ -56,45 +53,45 @@ const LoginPage = () => {
 
   return (
     <AuthLayout>
-      <div className="card shadow-sm">
-        <header className="card-header has-background-primary-light">
-          <div className="card-header-title is-centered py-4">
+      <div className="card shadow-sm" style={{ borderRadius: "16px", overflow: "hidden" }}>
+        <header className="card-header has-background-primary-light" style={{ borderBottom: "1px solid var(--border-soft)" }}>
+          <div className="card-header-title is-centered py-3 px-4">
             <div className="has-text-centered">
               <div
-                className="is-flex is-align-items-center is-justify-content-center mx-auto mb-2"
+                className="is-flex is-align-items-center is-justify-content-center mx-auto mb-1"
                 style={{
-                  width: "48px",
-                  height: "48px",
+                  width: "40px",
+                  height: "40px",
                   borderRadius: "50%",
                   background: "var(--gold-light)",
                   color: "var(--gold-dark)",
                 }}
               >
-                <ShieldCheck size={26} />
+                <ShieldCheck size={22} />
               </div>
-              <h1 className="title is-4 has-text-primary mb-1">
+              <h1 className="title is-5 has-text-primary mb-1">
                 Login Admin
               </h1>
-              <p className="subtitle is-6 has-text-grey">
+              <p className="subtitle is-6 has-text-grey mb-0">
                 Masuk untuk mengelola data sistem
               </p>
             </div>
           </div>
         </header>
 
-        <div className="card-content py-5">
+        <div className="card-content py-4 px-5">
           {errorMsg && (
             <Notification
               type="danger"
               onClose={() => setErrorMsg("")}
-              className="mb-4"
+              className="mb-3"
             >
               {errorMsg}
             </Notification>
           )}
 
           <form onSubmit={handleLogin}>
-            <FormField label="Email" required>
+            <FormField label="Email" required className="mb-2">
               <Input
                 type="email"
                 value={email}
@@ -105,7 +102,7 @@ const LoginPage = () => {
               />
             </FormField>
 
-            <FormField label="Password" required>
+            <FormField label="Password" required className="mb-3">
               <Input
                 type="password"
                 value={password}
@@ -116,7 +113,7 @@ const LoginPage = () => {
               />
             </FormField>
 
-            <div className="field mt-5">
+            <div className="field mt-4 mb-0">
               <Button
                 type="submit"
                 variant="primary"
@@ -132,7 +129,7 @@ const LoginPage = () => {
           </form>
         </div>
 
-        <footer className="card-footer py-3 has-background-white-ter has-text-centered">
+        <footer className="card-footer py-2 has-background-white-ter has-text-centered">
           <p className="is-size-7 has-text-grey" style={{ width: "100%" }}>
             Belum punya akun admin?{" "}
             <Link to="/register" className="has-text-success-dark has-text-weight-semibold">

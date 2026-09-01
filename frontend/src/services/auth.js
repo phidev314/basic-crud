@@ -2,9 +2,13 @@ import { http } from "./api";
 
 // Service fungsi untuk Otentikasi Admin
 export const authService = {
-  // Login admin
-  login: async (credentials) => {
-    const response = await http.post("/auth/login", credentials);
+  // login admin
+  login: async (credentials, passwordParam) => {
+    const payload =
+      typeof credentials === "object" && credentials !== null
+        ? credentials
+        : { email: credentials, password: passwordParam };
+    const response = await http.post("/auth/login", payload);
     if (response.data?.token) {
       localStorage.setItem("token", response.data.token);
       if (response.data?.admin) {

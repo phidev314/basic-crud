@@ -1,5 +1,6 @@
 import db from "./config/Database.js";
 import "./models/UserModel.js";
+import "./models/AddressModel.js";
 import "./models/AdminModel.js";
 import "./models/ProductCategoryModel.js";
 import "./models/ProductModel.js";

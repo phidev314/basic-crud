@@ -1,5 +1,6 @@
 import React from "react";
 
+// komponen pembungkus field formulir dengan label, validasi error, dan teks bantuan
 const FormField = ({
   label,
   children,
@@ -11,7 +12,7 @@ const FormField = ({
   return (
     <div className={`field ${className}`}>
       {label && (
-        <label className="label">
+        <label className="label mb-1" style={{ fontSize: "0.85rem", fontWeight: "600" }}>
           {label}
           {required && <span className="has-text-danger ml-1">*</span>}
         </label>

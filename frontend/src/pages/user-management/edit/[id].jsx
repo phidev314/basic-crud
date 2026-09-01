@@ -14,7 +14,8 @@ const EditUserPage = () => {
   const [notFound, setNotFound] = useState(false);
 
   const breadcrumbs = [
-    { label: "Home", href: "/user-management" },
+    { label: "Home", href: "/" },
+    { label: "Dashboard", href: "/dashboard" },
     { label: "User Management", href: "/user-management" },
     { label: `Edit Pengguna ${id ? `(#${id})` : ""}`, active: true },
   ];
@@ -25,11 +26,13 @@ const EditUserPage = () => {
         setLoadingData(true);
         setErrorMsg("");
         const response = await userService.getUserById(id);
-        if (response.data) {
+        const userData = response.data || response;
+        if (userData) {
           setInitialData({
-            name: response.data.name || "",
-            email: response.data.email || "",
-            gender: response.data.gender || "Laki-laki",
+            name: userData.name || "",
+            email: userData.email || "",
+            gender: userData.gender || "Laki-laki",
+            avatar: userData.avatar || null,
           });
         } else {
           setNotFound(true);
@@ -56,7 +59,7 @@ const EditUserPage = () => {
       setSaving(true);
       setErrorMsg("");
       await userService.updateUser(id, formData);
-      navigate("/user-management");
+      navigate(`/user-management/detail/${id}`);
     } catch (error) {
       console.error("Gagal mengupdate user:", error);
       setErrorMsg(
@@ -72,26 +75,23 @@ const EditUserPage = () => {
       <div className="columns is-centered">
         <div className="column is-7-tablet is-6-desktop">
           {loadingData ? (
-            <div className="card">
-              <div className="card-content has-text-centered py-6">
-                <p className="title is-6 has-text-grey">
-                  Memuat data pengguna #{id}...
-                </p>
-              </div>
+            <div className="card-container p-6 has-text-centered">
+              <div className="loader is-inline-block mr-2" />
+              <p className="title is-6 has-text-grey mb-0">
+                Memuat data pengguna #{id}...
+              </p>
             </div>
           ) : notFound ? (
-            <div className="card">
-              <div className="card-content has-text-centered py-6">
-                <Notification type="warning" className="mb-4">
-                  <p className="title is-5 mb-2">Pengguna Tidak Ditemukan</p>
-                  <p className="subtitle is-6 has-text-grey mb-0">
-                    Data pengguna dengan ID #{id} tidak ada di sistem.
-                  </p>
-                </Notification>
-                <Button to="/user-management" variant="primary" size="small">
-                  Kembali ke Daftar Pengguna
-                </Button>
-              </div>
+            <div className="card-container p-6 has-text-centered">
+              <Notification type="warning" className="mb-4">
+                <p className="title is-5 mb-2">Pengguna Tidak Ditemukan</p>
+                <p className="subtitle is-6 has-text-grey mb-0">
+                  Data pengguna dengan ID #{id} tidak ada di sistem.
+                </p>
+              </Notification>
+              <Button to="/user-management" variant="primary" size="small">
+                Kembali ke Daftar Pengguna
+              </Button>
             </div>
           ) : (
             <UserForm
@@ -100,10 +100,11 @@ const EditUserPage = () => {
               submitText="Simpan Perubahan"
               initialData={initialData}
               onSubmit={handleUpdateUser}
-              cancelTo="/user-management"
+              cancelTo={`/user-management/detail/${id}`}
               loading={saving}
               errorMsg={errorMsg}
               onCloseError={() => setErrorMsg("")}
+              isEdit={true}
             />
           )}
         </div>

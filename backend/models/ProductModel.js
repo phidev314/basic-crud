@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import db from "../config/Database.js";
 import ProductCategory from "./ProductCategoryModel.js";
 
+// definisi skema tabel products untuk menyimpan data inventaris katalog produk
 const Product = db.define(
   "products",
   {
@@ -35,7 +36,7 @@ const Product = db.define(
     },
     imageUrl: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: true, // menyimpan path file gambar/foto produk
     },
     categoryId: {
       type: DataTypes.INTEGER,
@@ -51,14 +52,15 @@ const Product = db.define(
   }
 );
 
-// Definisi Relasi (Association)
+// definisi relasi 1-to-n: satu kategori memiliki banyak produk
 ProductCategory.hasMany(Product, {
   foreignKey: "categoryId",
   as: "products",
-  onDelete: "SET NULL",
+  onDelete: "SET NULL", // jika kategori dihapus, kolom categoryId pada produk diset NULL (tidak ikut terhapus)
   onUpdate: "CASCADE",
 });
 
+// relasi n-to-1: setiap produk merujuk ke satu kategori
 Product.belongsTo(ProductCategory, {
   foreignKey: "categoryId",
   as: "category",

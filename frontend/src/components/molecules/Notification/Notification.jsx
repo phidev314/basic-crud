@@ -1,6 +1,7 @@
 import React from "react";
 import { CheckCircle2, AlertCircle, Info, AlertTriangle } from "lucide-react";
 
+// komponen notifikasi / alert box untuk feedback sistem
 const Notification = ({
   children,
   type = "info",
@@ -14,7 +15,7 @@ const Notification = ({
     "notification",
     type ? `is-${type}` : "",
     isLight ? "is-light" : "",
-    "is-flex is-align-items-center is-justify-content-between",
+    "is-flex is-align-items-flex-start is-justify-content-between",
     className,
   ]
     .filter(Boolean)
@@ -34,10 +35,10 @@ const Notification = ({
   };
 
   return (
-    <div className={classNames}>
-      <div className="is-flex is-align-items-center" style={{ flex: 1 }}>
-        {getIcon()}
-        <div>{children}</div>
+    <div className={classNames} style={{ wordBreak: "break-word" }}>
+      <div className="is-flex is-align-items-flex-start" style={{ flex: 1, minWidth: 0, gap: "8px" }}>
+        <div style={{ flexShrink: 0, marginTop: "2px" }}>{getIcon()}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
       </div>
       {onClose && (
         <button
@@ -45,7 +46,7 @@ const Notification = ({
           onClick={onClose}
           aria-label="close notification"
           type="button"
-          style={{ flexShrink: 0 }}
+          style={{ flexShrink: 0, marginTop: "2px" }}
         />
       )}
     </div>

@@ -9,7 +9,7 @@ const TambahProductPage = () => {
   const navigate = useNavigate();
 
   const breadcrumbs = [
-    { label: "Home", href: "/dashboard" },
+    { label: "Home", href: "/" },
     { label: "Dashboard", href: "/dashboard" },
     { label: "Product Management", href: "/product-management" },
     { label: "Tambah Produk", active: true },

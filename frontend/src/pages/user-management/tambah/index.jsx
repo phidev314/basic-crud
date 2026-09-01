@@ -9,7 +9,8 @@ const TambahUserPage = () => {
   const navigate = useNavigate();
 
   const breadcrumbs = [
-    { label: "Home", href: "/user-management" },
+    { label: "Home", href: "/" },
+    { label: "Dashboard", href: "/dashboard" },
     { label: "User Management", href: "/user-management" },
     { label: "Tambah Pengguna", active: true },
   ];

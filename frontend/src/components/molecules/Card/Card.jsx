@@ -1,3 +1,5 @@
+import React from "react";
+
 const Card = ({ title, icon, value, stats, loading }) => {
     return (
         <div className="column is-12-mobile is-6-tablet is-3-desktop">

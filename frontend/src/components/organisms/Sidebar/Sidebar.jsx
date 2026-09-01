@@ -6,10 +6,17 @@ import {
   Package,
   LogOut,
   ShieldCheck,
+  ShoppingBag,
 } from "lucide-react";
 import { authService } from "../../../services";
 
 const MENU_ITEMS = [
+  {
+    path: "/",
+    label: "Lihat Toko (Katalog)",
+    icon: ShoppingBag,
+    exact: true,
+  },
   {
     path: "/dashboard",
     label: "Dashboard",

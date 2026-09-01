@@ -10,9 +10,11 @@ import {
   Settings,
 } from "lucide-react";
 import { MainLayout, Notification, Tag, Button, Card, Table } from "../../components";
-import { userService, productService, authService } from "../../services";
+import { dashboardService, authService } from "../../services";
 
+// halaman dashboard panel administrator
 const DashboardPage = () => {
+  // state data ringkasan agregasi, recent list, dan status loading
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [stats, setStats] = useState({
@@ -26,60 +28,35 @@ const DashboardPage = () => {
   const [recentUsers, setRecentUsers] = useState([]);
   const [recentProducts, setRecentProducts] = useState([]);
 
+  // mengambil info admin yang sedang login dari authService
   const admin = authService.getAdmin();
 
   const breadcrumbs = [
-    { label: "Home", href: "/dashboard" },
+    { label: "Home", href: "/" },
     { label: "Dashboard", active: true },
   ];
 
+  // mengambil data ringkasan statistik dari api backend
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setErrorMsg("");
 
-      // Fetch users, products, and categories secara paralel
-      const [usersRes, productsRes, categoriesRes] = await Promise.all([
-        userService.getUsers().catch(() => ({ data: [] })),
-        productService.getProducts({ limit: 5 }).catch(() => ({ data: [] })),
-        productService.getCategories().catch(() => ({ data: [] })),
-      ]);
+      const response = await dashboardService.getStats();
+      const resData = response.data || response;
 
-      const usersList = Array.isArray(usersRes.data) ? usersRes.data : [];
-      const maleCount = usersList.filter((u) => u.gender === "Laki-laki").length;
-      const femaleCount = usersList.filter((u) => u.gender === "Perempuan").length;
-
-      // Products data
-      let productsList = [];
-      let totalProdCount = 0;
-      if (productsRes.data && Array.isArray(productsRes.data.data)) {
-        productsList = productsRes.data.data;
-        totalProdCount = productsRes.data.totalItems || productsList.length;
-      } else if (Array.isArray(productsRes.data)) {
-        productsList = productsRes.data;
-        totalProdCount = productsList.length;
+      if (resData && resData.stats) {
+        setStats({
+          totalUsers: resData.stats.totalUsers || 0,
+          maleUsers: resData.stats.maleUsers || 0,
+          femaleUsers: resData.stats.femaleUsers || 0,
+          totalProducts: resData.stats.totalProducts || 0,
+          totalStock: resData.stats.totalStock || 0,
+          totalCategories: resData.stats.totalCategories || 0,
+        });
+        setRecentUsers(resData.recentUsers || []);
+        setRecentProducts(resData.recentProducts || []);
       }
-
-      const totalStockSum = productsList.reduce(
-        (sum, item) => sum + (Number(item.stock) || 0),
-        0
-      );
-
-      const categoriesList = Array.isArray(categoriesRes.data)
-        ? categoriesRes.data
-        : [];
-
-      setStats({
-        totalUsers: usersList.length,
-        maleUsers: maleCount,
-        femaleUsers: femaleCount,
-        totalProducts: totalProdCount,
-        totalStock: totalStockSum,
-        totalCategories: categoriesList.length,
-      });
-
-      setRecentUsers(usersList.slice(0, 5));
-      setRecentProducts(productsList.slice(0, 5));
     } catch (error) {
       console.error("Gagal memuat statistik dashboard:", error);
       setErrorMsg("Gagal memuat ringkasan data statistik dari server.");
@@ -88,10 +65,12 @@ const DashboardPage = () => {
     }
   };
 
+  // eksekusi pengambilan data statistik saat halaman dashboard pertama kali dimuat
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
+  // format angka menjadi mata uang rupiah (idr)
   const formatRupiah = (number) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -100,15 +79,49 @@ const DashboardPage = () => {
     }).format(number || 0);
   };
 
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
+
   const userColumns = [
     {
-      header: "Nama",
-      accessor: "name",
-      cellClassName: "has-text-weight-semibold",
-    },
-    {
-      header: "Email",
-      accessor: "email",
+      header: "Pengguna",
+      render: (u) => (
+        <div className="is-flex is-align-items-center" style={{ gap: "10px" }}>
+          {u.avatar ? (
+            <figure className="image is-32x32" style={{ borderRadius: "50%", overflow: "hidden", flexShrink: 0 }}>
+              <img
+                src={u.avatar.startsWith("http") ? u.avatar : `${API_BASE_URL}${u.avatar.startsWith("/") ? "" : "/"}${u.avatar}`}
+                alt={u.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </figure>
+          ) : (
+            <div
+              style={{
+                width: "32px",
+                height: "32px",
+                borderRadius: "50%",
+                backgroundColor: "var(--cream-bg)",
+                border: "1px solid var(--border-soft)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.75rem",
+                fontWeight: "700",
+                color: "var(--gold-dark)",
+                flexShrink: 0,
+              }}
+            >
+              {u.name?.charAt(0)?.toUpperCase() || "U"}
+            </div>
+          )}
+          <div>
+            <span className="has-text-weight-semibold is-block" style={{ fontSize: "0.85rem" }}>
+              {u.name}
+            </span>
+            <span className="has-text-grey is-size-7">{u.email}</span>
+          </div>
+        </div>
+      ),
     },
     {
       header: "Gender",
@@ -143,7 +156,15 @@ const DashboardPage = () => {
     {
       header: "Stok",
       render: (p) => (
-        <span className="tag is-success is-light is-small">
+        <span
+          className={`tag is-small ${
+            p.stock <= 0
+              ? "is-danger is-light"
+              : p.stock <= 5
+                ? "is-warning is-light"
+                : "is-success is-light"
+          }`}
+        >
           {p.stock} unit
         </span>
       ),
@@ -152,7 +173,7 @@ const DashboardPage = () => {
 
   return (
     <MainLayout breadcrumbs={breadcrumbs}>
-      {/* Header Banner */}
+      {/* HEADER BANNER */}
       <div className="card-container mb-5 p-5">
         <div className="columns is-vcentered is-mobile">
           <div className="column">
@@ -160,7 +181,7 @@ const DashboardPage = () => {
               Selamat Datang, {admin?.name || "Administrator"}!
             </h1>
             <p className="subtitle is-6 mb-0">
-              Ringkasan performa dan data statistik sistem Anda hari ini.
+              Ringkasan performa dan data statistik sistem Anda hari ini dihitung secara server-side.
             </p>
           </div>
         </div>
@@ -188,7 +209,7 @@ const DashboardPage = () => {
           title="Total Produk"
           icon={<Package size={24} color="var(--gold-dark)" />}
           value={stats.totalProducts}
-          stats={`Estimasi Stok: ${stats.totalStock} unit`}
+          stats={`Total Stok Sistem: ${stats.totalStock} unit`}
           loading={loading}
         />
 

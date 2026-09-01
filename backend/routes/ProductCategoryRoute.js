@@ -11,8 +11,8 @@ import { verifyToken } from "../middleware/AuthMiddleware.js";
 const router = express.Router();
 
 /**
- * @description - routing untuk autentikasi
- * @note - endpoint yang menggunakan verifyToken artinya membutuhkan otorisasi
+ * @description - routing untuk entitas kategori produk (product category)
+ * @note - endpoint yang menggunakan verifyToken artinya membutuhkan otorisasi bearer token admin
  * @note - endpoint yang tidak menggunakan verifyToken artinya termasuk public api
  */
 

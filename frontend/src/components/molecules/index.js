@@ -5,3 +5,5 @@ export { default as SearchBar } from "./SearchBar/SearchBar";
 export { default as Modal } from "./Modal/Modal";
 export { default as Card } from "./Card/Card";
 export { default as Table } from "./Table/Table";
+export { default as Pagination } from "./Pagination/Pagination";
+export { default as Catalog } from "./Catalog/Catalog";

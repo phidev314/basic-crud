@@ -5,7 +5,7 @@ import Product from "../models/ProductModel.js";
 export const getCategories = async (req, res) => {
   try {
     const categories = await ProductCategory.findAll({
-      order: [["name", "ASC"]], // diurutkan berdasarkan name
+      order: [["name", "ASC"]], // diurutkan berdasarkan nama
     });
     res.status(200).json(categories);
   } catch (error) {
@@ -23,7 +23,7 @@ export const getCategoryById = async (req, res) => {
         {
           model: Product,
           as: "products",
-          attributes: ["id", "name", "price", "stock"],
+          attributes: ["id", "name", "price", "stock"], // ambil atribut ringkas produk terkait
         },
       ],
     });
@@ -39,10 +39,11 @@ export const getCategoryById = async (req, res) => {
   }
 };
 
-// create category (sementara category akan diseeding dari file seeding, jadi create category sementara tidak dipakai)
+// create category
 export const createCategory = async (req, res) => {
   const { name, description } = req.body;
 
+  // validasi input nama kategori
   if (!name || name.trim() === "") {
     return res.status(400).json({ msg: "Nama kategori wajib diisi" });
   }

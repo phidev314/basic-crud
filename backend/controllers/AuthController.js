@@ -11,14 +11,14 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export const register = async (req, res) => {
   const { name, email, password, confPassword } = req.body;
 
-  // validasi input
+  // validasi input wajib
   if (!name || !email || !password) {
     return res
       .status(400)
       .json({ msg: "Nama, Email, dan Password wajib diisi" });
   }
 
-  // validasi password
+  // validasi kecocokan password dan konfirmasi password
   if (confPassword && password !== confPassword) {
     return res
       .status(400)
@@ -26,7 +26,7 @@ export const register = async (req, res) => {
   }
 
   try {
-    // validasi email
+    // cek apakah email sudah terdaftar
     const existingAdmin = await Admin.findOne({
       where: {
         email: email.toLowerCase(),
@@ -39,7 +39,7 @@ export const register = async (req, res) => {
         .json({ msg: "Email sudah terdaftar. Gunakan email lain." });
     }
 
-    // hash password
+    // hash password menggunakan bcrypt sebelum disimpan ke database
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
 
@@ -66,7 +66,7 @@ export const login = async (req, res) => {
   }
 
   try {
-    // validasi email
+    // cari admin berdasarkan email
     const admin = await Admin.findOne({
       where: {
         email: email.toLowerCase(),
@@ -77,19 +77,20 @@ export const login = async (req, res) => {
       return res.status(404).json({ msg: "Email atau Password tidak cocok" });
     }
 
-    // verifikasi password
+    // verifikasi kesesuaian password
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res.status(400).json({ msg: "Email atau Password tidak cocok" });
     }
 
-    // payload
+    // payload token jwt
     const payload = {
       id: admin.id,
       name: admin.name,
       email: admin.email,
     };
 
+    // buat token jwt dengan masa berlaku 1 hari
     const token = jwt.sign(payload, JWT_SECRET, {
       expiresIn: "1d", // expired: 1 hari
     });

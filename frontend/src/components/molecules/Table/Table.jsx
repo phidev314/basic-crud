@@ -1,23 +1,27 @@
 import React from "react";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 
 /**
- * Reusable Table Molecule Component
+ * Table Reusable Component dengan Dukungan Server-Side Sorting
  *
- * @param {Array} columns - Array of column definitions { header, accessor, render, className, headerClassName, cellClassName, align, width, style, headerStyle }
- * @param {Array} data - Array of row data objects
- * @param {string|function} keyField - Row key property or function (row, index) => key
- * @param {boolean} loading - Loading state flag
- * @param {string} loadingMessage - Text displayed while loading
- * @param {string} emptyMessage - Text displayed when data is empty
- * @param {React.ReactNode} emptyIcon - Icon displayed in empty state
- * @param {React.ReactNode} emptyAction - Action button / component for empty state
- * @param {React.ReactNode} emptyState - Full custom empty state override
- * @param {boolean} hoverable - Add is-hoverable class
- * @param {boolean} striped - Add is-striped class
- * @param {boolean} fullwidth - Add is-fullwidth class
- * @param {string} className - Additional CSS class for table element
- * @param {string} containerClassName - Additional CSS class for table-container wrapper
- * @param {React.ReactNode} footer - Footer component or pagination slot
+ * @param {Array} columns - definisi kolom { header, accessor, sortable, sortKey, render, className, headerClassName, cellClassName, align, width, style, headerStyle }
+ * @param {Array} data - objek data baris tabel
+ * @param {string|function} keyField - properti kunci baris atau fungsi (row, index) => key
+ * @param {boolean} loading - status penanda proses memuat data (loading)
+ * @param {string} loadingMessage - teks yang ditampilkan saat proses memuat data
+ * @param {string} emptyMessage - teks yang ditampilkan saat data kosong
+ * @param {React.ReactNode} emptyIcon - icon yang ditampilkan saat status data kosong
+ * @param {React.ReactNode} emptyAction - tombol aksi / komponen tambahan untuk status data kosong
+ * @param {React.ReactNode} emptyState - kustomisasi tampilan penuh untuk status data kosong
+ * @param {boolean} hoverable - menambahkan kelas CSS is-hoverable
+ * @param {boolean} striped - menambahkan kelas CSS is-striped
+ * @param {boolean} fullwidth - menambahkan kelas CSS is-fullwidth
+ * @param {string} className - kelas CSS tambahan untuk elemen tabel
+ * @param {string} containerClassName - kelas CSS tambahan untuk pembungkus (wrapper) table-container
+ * @param {React.ReactNode} footer - komponen footer atau slot pagination
+ * @param {string} sortBy - kolom pengurutan aktif saat ini
+ * @param {string} sortOrder - arah pengurutan ("ASC" | "DESC")
+ * @param {Function} onSort - callback ketika kolom pengurutan diklik (sortKey: string) => void
  */
 const Table = ({
   columns = [],
@@ -35,6 +39,9 @@ const Table = ({
   className = "table-luxury",
   containerClassName = "",
   footer = null,
+  sortBy = "",
+  sortOrder = "DESC",
+  onSort = null,
 }) => {
   const getRowKey = (row, index) => {
     if (typeof keyField === "function") {
@@ -61,6 +68,14 @@ const Table = ({
     .filter(Boolean)
     .join(" ");
 
+  const handleHeaderClick = (col) => {
+    if (!col.sortable || !onSort) return;
+    const key = col.sortKey || col.accessor;
+    if (key) {
+      onSort(key);
+    }
+  };
+
   return (
     <div className="table-wrapper">
       <div className={`table-container mb-0 ${containerClassName}`}>
@@ -70,10 +85,15 @@ const Table = ({
               <tr>
                 {columns.map((col, colIdx) => {
                   const alignClass = getAlignClass(col.align);
+                  const isSortable = Boolean(col.sortable && onSort);
+                  const sortKey = col.sortKey || col.accessor;
+                  const isCurrentSort = isSortable && sortBy === sortKey;
+
                   const headerClass = [
                     alignClass,
                     col.headerClassName,
                     col.className,
+                    isSortable ? "is-clickable is-unselectable" : "",
                   ]
                     .filter(Boolean)
                     .join(" ");
@@ -82,11 +102,49 @@ const Table = ({
                     ...(col.width ? { width: col.width } : {}),
                     ...(col.headerStyle || {}),
                     ...(col.style || {}),
+                    cursor: isSortable ? "pointer" : "default",
                   };
 
                   return (
-                    <th key={col.accessor || colIdx} className={headerClass} style={headerStyle}>
-                      {col.header}
+                    <th
+                      key={col.accessor || col.sortKey || colIdx}
+                      className={headerClass}
+                      style={headerStyle}
+                      onClick={() => handleHeaderClick(col)}
+                      title={isSortable ? `Klik untuk mengurutkan berdasarkan ${typeof col.header === "string" ? col.header : "kolom ini"}` : undefined}
+                    >
+                      <div
+                        className={`is-flex is-align-items-center ${
+                          col.align === "center"
+                            ? "is-justify-content-center"
+                            : col.align === "right"
+                              ? "is-justify-content-flex-end"
+                              : "is-justify-content-flex-start"
+                        }`}
+                        style={{ gap: "6px" }}
+                      >
+                        <span>{col.header}</span>
+                        {isSortable && (
+                          <span
+                            className="is-inline-flex is-align-items-center"
+                            style={{
+                              color: isCurrentSort ? "var(--gold-dark)" : "var(--ink-soft)",
+                              opacity: isCurrentSort ? 1 : 0.4,
+                              transition: "all 0.2s ease",
+                            }}
+                          >
+                            {isCurrentSort ? (
+                              sortOrder.toUpperCase() === "ASC" ? (
+                                <ArrowUp size={13} strokeWidth={2.5} />
+                              ) : (
+                                <ArrowDown size={13} strokeWidth={2.5} />
+                              )
+                            ) : (
+                              <ArrowUpDown size={12} strokeWidth={1.8} />
+                            )}
+                          </span>
+                        )}
+                      </div>
                     </th>
                   );
                 })}
