@@ -174,14 +174,35 @@ const DashboardPage = () => {
   return (
     <MainLayout breadcrumbs={breadcrumbs}>
       {/* HEADER BANNER */}
-      <div className="card-container mb-5 p-5">
+      <div
+        className="card-container mb-5 p-5"
+        style={{
+          background: "linear-gradient(135deg, var(--cream-card) 0%, rgba(176, 141, 87, 0.08) 100%)",
+          border: "1px solid var(--border-soft)",
+          borderRadius: "16px",
+          boxShadow: "var(--shadow-subtle)",
+        }}
+      >
         <div className="columns is-vcentered is-mobile">
           <div className="column">
-            <h1 className="page-title mb-1">
+            <span
+              className="tag is-small mb-2"
+              style={{
+                backgroundColor: "var(--gold-light)",
+                color: "var(--gold-dark)",
+                fontWeight: "600",
+                fontSize: "0.7rem",
+                letterSpacing: "0.5px",
+                textTransform: "uppercase",
+              }}
+            >
+              Overview Sistem
+            </span>
+            <h1 className="page-title mb-1" style={{ fontSize: "2rem" }}>
               Selamat Datang, {admin?.name || "Administrator"}!
             </h1>
-            <p className="subtitle is-6 mb-0">
-              Ringkasan performa dan data statistik sistem Anda hari ini dihitung secara server-side.
+            <p className="subtitle is-6 mb-0" style={{ color: "var(--ink-soft)" }}>
+              Ringkasan performa dan data statistik sistem Anda hari ini dihitung secara real-time dari database.
             </p>
           </div>
         </div>
@@ -274,13 +295,13 @@ const DashboardPage = () => {
       <div className="columns is-multiline">
         {/* Recent Users Preview */}
         <div className="column is-12-tablet is-6-desktop">
-          <div className="card">
+          <div className="card" style={{ borderRadius: "14px", overflow: "hidden" }}>
             <header className="card-header is-flex is-justify-content-between is-align-items-center pr-4">
               <p className="card-header-title is-flex is-align-items-center" style={{ gap: "8px" }}>
                 <Users size={18} />
                 <span>Pengguna Terbaru</span>
               </p>
-              <Link to="/user-management" className="is-size-7 has-text-success-dark has-text-weight-bold is-flex is-align-items-center" style={{ gap: "4px" }}>
+              <Link to="/user-management" className="is-size-7 has-text-weight-bold is-flex is-align-items-center" style={{ color: "var(--gold-dark)", gap: "4px" }}>
                 <span>Lihat Semua</span>
                 <ArrowRight size={14} />
               </Link>
@@ -299,13 +320,13 @@ const DashboardPage = () => {
 
         {/* Recent Products Preview */}
         <div className="column is-12-tablet is-6-desktop">
-          <div className="card">
+          <div className="card" style={{ borderRadius: "14px", overflow: "hidden" }}>
             <header className="card-header is-flex is-justify-content-between is-align-items-center pr-4">
               <p className="card-header-title is-flex is-align-items-center" style={{ gap: "8px" }}>
                 <Package size={18} />
                 <span>Produk Terbaru</span>
               </p>
-              <Link to="/product-management" className="is-size-7 has-text-success-dark has-text-weight-bold is-flex is-align-items-center" style={{ gap: "4px" }}>
+              <Link to="/product-management" className="is-size-7 has-text-weight-bold is-flex is-align-items-center" style={{ color: "var(--gold-dark)", gap: "4px" }}>
                 <span>Lihat Semua</span>
                 <ArrowRight size={14} />
               </Link>

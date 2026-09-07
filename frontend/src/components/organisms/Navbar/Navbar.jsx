@@ -48,9 +48,6 @@ const Navbar = ({ className = "" }) => {
 
         <div className={`navbar-menu ${isActive ? "is-active" : ""}`}>
           <div className="navbar-start">
-            <Link to="/" className="navbar-item has-text-weight-medium">
-              Lihat Toko
-            </Link>
             <Link to="/dashboard" className="navbar-item">
               Dashboard
             </Link>

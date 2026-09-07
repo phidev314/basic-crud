@@ -5,9 +5,9 @@ import path from "path";
 import db from "./config/Database.js";
 
 // import model agar relasi tabel (associations) terdaftar ke sequelize
+import Role from "./models/RoleModel.js";
 import "./models/UserModel.js";
 import "./models/AddressModel.js";
-import "./models/AdminModel.js";
 import "./models/ProductCategoryModel.js";
 import "./models/ProductModel.js";
 
@@ -24,11 +24,27 @@ dotenv.config(); // untuk membaca file .env dan environment variables di dalamny
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// fungsi untuk memastikan default role tersedia di database (hanya 2 jenis: admin & user)
+const seedDefaultRoles = async () => {
+  const defaultRoles = [
+    { name: "admin", description: "Administrator dengan akses penuh" },
+    { name: "user", description: "Pengguna reguler / pelanggan" },
+  ];
+
+  for (const roleData of defaultRoles) {
+    const existing = await Role.findOne({ where: { name: roleData.name } });
+    if (!existing) {
+      await Role.create(roleData);
+    }
+  }
+};
+
 // sync db (alter: true memastikan kolom baru dan relasi tabel otomatis disinkronkan ke mysql)
 (async () => {
   try {
     await db.sync({ alter: true });
-    console.log("Database synchronized successfully with associations.");
+    await seedDefaultRoles();
+    console.log("Database synchronized successfully with associations & default roles.");
   } catch (error) {
     console.error("Database connection error:", error.message);
   }

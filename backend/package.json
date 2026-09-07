@@ -8,7 +8,8 @@
     "start": "nodemon index.js",
     "db:reset": "node reset-db.js",
     "seed": "node seed-categories.js",
-    "seed:categories": "node seed-categories.js"
+    "seed:categories": "node seed-categories.js",
+    "seed:roles": "node seed-roles.js"
   },
   "keywords": [],
   "author": "",

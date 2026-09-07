@@ -16,9 +16,16 @@ const Button = ({
   className = "",
   ...props
 }) => {
+  const getVariantClass = (v) => {
+    if (!v) return "is-primary";
+    if (v === "outline-luxury") return "btn-outline-luxury";
+    if (v === "luxury") return "btn-luxury is-primary";
+    return `is-${v}`;
+  };
+
   const classNames = [
     "button",
-    variant ? `is-${variant}` : "",
+    getVariantClass(variant),
     size ? `is-${size}` : "is-size-7",
     isOutlined ? "is-outlined" : "",
     isRounded ? "is-rounded" : "",

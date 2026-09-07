@@ -1,16 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserPlus, ShieldCheck } from "lucide-react";
+import {
+  UserPlus,
+  ShieldCheck,
+  User,
+  Mail,
+  Lock,
+  KeyRound,
+  ArrowLeft,
+  Sparkles,
+  CheckCircle2,
+  AlertCircle,
+  X,
+  Zap,
+  Award,
+  Check,
+} from "lucide-react";
 import {
   FormField,
   Input,
-  Button,
-  Notification,
-  AuthLayout
+  AuthLayout,
 } from "../../../components";
 import { authService } from "../../../services";
+import "../auth.css";
 
-// halaman registrasi akun administrator
+// halaman registrasi akun administrator dengan antarmuka modern split-panel luxury
 const RegisterPage = () => {
   // state form input pendaftaran, konfirmasi password, dan status
   const [name, setName] = useState("");
@@ -29,6 +43,25 @@ const RegisterPage = () => {
     }
   }, [navigate]);
 
+  // hitung kekuatan password secara real-time
+  const passwordStrength = useMemo(() => {
+    if (!password) return { score: 0, label: "", classname: "" };
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (password.length >= 8 && /[0-9]/.test(password)) score += 1;
+    if (password.length >= 8 && /[^A-Za-z0-9]/.test(password) && /[A-Z]/.test(password)) score += 1;
+
+    if (score === 1) return { score: 1, label: "Lemah (min. 6 karakter)", classname: "is-weak" };
+    if (score === 2) return { score: 2, label: "Sedang (bagus)", classname: "is-medium" };
+    return { score: 3, label: "Kuat & Aman", classname: "is-strong" };
+  }, [password]);
+
+  // periksa apakah password dan konfirmasi cocok
+  const isMatch = useMemo(() => {
+    if (!confPassword) return null;
+    return password === confPassword;
+  }, [password, confPassword]);
+
   // submit pendaftaran admin baru
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -37,9 +70,15 @@ const RegisterPage = () => {
       return;
     }
 
+    // validasi panjang password
+    if (password.length < 6) {
+      setErrorMsg("Kata sandi minimal 6 karakter.");
+      return;
+    }
+
     // validasi konfirmasi password
     if (password !== confPassword) {
-      setErrorMsg("Password dan Konfirmasi Password tidak cocok.");
+      setErrorMsg("Kata sandi dan Konfirmasi Kata Sandi tidak cocok.");
       return;
     }
 
@@ -74,124 +113,260 @@ const RegisterPage = () => {
   };
 
   return (
-    <AuthLayout>
-      <div className="card shadow-sm" style={{ borderRadius: "16px", overflow: "hidden" }}>
-        <header className="card-header has-background-primary-light" style={{ borderBottom: "1px solid var(--border-soft)" }}>
-          <div className="card-header-title is-centered py-3 px-4">
-            <div className="has-text-centered">
-              <div
-                className="is-flex is-align-items-center is-justify-content-center mx-auto mb-1"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  borderRadius: "50%",
-                  background: "var(--gold-light)",
-                  color: "var(--gold-dark)",
-                }}
-              >
-                <ShieldCheck size={22} />
+    <AuthLayout maxWidth="1040px">
+      <div className="auth-split-card">
+        {/* PANEL KIRI: HERO SHOWCASE BRANDING */}
+        <div className="auth-showcase-panel">
+          <div className="auth-showcase-pattern" />
+
+          <div className="auth-showcase-content">
+            {/* BRAND LOGO */}
+            <Link to="/" className="auth-showcase-brand">
+              <div>
+                <h2 className="auth-brand-title">ATELIER</h2>
+                <span className="auth-brand-tagline">Portal Administrasi</span>
               </div>
-              <h1 className="title is-5 has-text-primary mb-1">
-                Registrasi Admin
-              </h1>
-              <p className="subtitle is-6 has-text-grey mb-0">
-                Buat akun admin baru untuk mengelola sistem
-              </p>
+            </Link>
+
+            {/* HEADLINE */}
+            <h1 className="auth-showcase-heading">
+              Mulai Kelola Bisnis Anda Hari Ini.
+            </h1>
+            <p className="auth-showcase-subtext">
+              Daftarkan akun administrator baru untuk mendapatkan akses penuh ke manajemen katalog, inventaris produk premium, dan pengaturan sistem.
+            </p>
+
+            {/* FITUR UNGGULAN */}
+            <div className="auth-feature-list">
+              <div className="auth-feature-item">
+                <div className="auth-feature-icon">
+                  <Award size={18} />
+                </div>
+                <div>
+                  <div className="auth-feature-title">Akses Penuh Manajemen</div>
+                  <div className="auth-feature-desc">
+                    Tambah, ubah, dan pantau produk & kategori seketika.
+                  </div>
+                </div>
+              </div>
+
+              <div className="auth-feature-item">
+                <div className="auth-feature-icon">
+                  <ShieldCheck size={18} />
+                </div>
+                <div>
+                  <div className="auth-feature-title">Standar Keamanan Tinggi</div>
+                  <div className="auth-feature-desc">
+                    Data akun diamankan dengan hashing kata sandi modern.
+                  </div>
+                </div>
+              </div>
+
+              <div className="auth-feature-item">
+                <div className="auth-feature-icon">
+                  <Zap size={18} />
+                </div>
+                <div>
+                  <div className="auth-feature-title">Sinkronisasi Kilat</div>
+                  <div className="auth-feature-desc">
+                    Perubahan langsung tercermin pada katalog toko secara live.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </header>
+        </div>
 
-        <div className="card-content py-4 px-5">
+        {/* PANEL KANAN: FORM REGISTRASI */}
+        <div className="auth-form-panel">
+          {/* TOP BACK TO SHOP LINK */}
+          <div className="auth-top-nav">
+            <Link to="/" className="auth-back-link">
+              <ArrowLeft size={14} />
+              <span>Kembali ke Katalog</span>
+            </Link>
+          </div>
+
+          {/* FORM HEADER */}
+          <div className="auth-form-header">
+            <div className="auth-form-badge">
+              <UserPlus size={13} />
+              <span>Registrasi Pengelola Baru</span>
+            </div>
+            <h2 className="auth-form-title">Buat Akun Admin</h2>
+            <p className="auth-form-subtitle">
+              Lengkapi data di bawah ini untuk membuat hak akses administrator
+            </p>
+          </div>
+
+          {/* NOTIFICATION MESSAGES */}
           {errorMsg && (
-            <Notification
-              type="danger"
-              onClose={() => setErrorMsg("")}
-              className="mb-3"
-            >
-              {errorMsg}
-            </Notification>
+            <div className="auth-alert is-danger" role="alert">
+              <AlertCircle size={18} className="auth-alert-icon" />
+              <div className="auth-alert-content">{errorMsg}</div>
+              <button
+                type="button"
+                className="auth-alert-close"
+                onClick={() => setErrorMsg("")}
+                aria-label="Tutup pesan error"
+              >
+                <X size={16} />
+              </button>
+            </div>
           )}
 
           {successMsg && (
-            <Notification
-              type="success"
-              onClose={() => setSuccessMsg("")}
-              className="mb-3"
-            >
-              {successMsg}
-            </Notification>
+            <div className="auth-alert is-success" role="status">
+              <CheckCircle2 size={18} className="auth-alert-icon" />
+              <div className="auth-alert-content">{successMsg}</div>
+            </div>
           )}
 
-          <form onSubmit={handleRegister}>
+          {/* FORM PENDAFTARAN */}
+          <form onSubmit={handleRegister} noValidate>
             <FormField label="Nama Lengkap" required className="mb-2">
               <Input
                 type="text"
+                id="admin-name"
+                name="name"
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Masukkan nama lengkap"
+                placeholder="Contoh: Sarah Jenkins"
+                iconLeft={<User size={18} />}
+                className="auth-input-field"
                 required
-                disabled={loading}
+                disabled={loading || Boolean(successMsg)}
               />
             </FormField>
 
-            <FormField label="Email" required className="mb-2">
+            <FormField label="Alamat Email" required className="mb-2">
               <Input
                 type="email"
+                id="admin-register-email"
+                name="email"
+                autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@mail.com"
+                placeholder="admin@perusahaan.com"
+                iconLeft={<Mail size={18} />}
+                className="auth-input-field"
                 required
-                disabled={loading}
+                disabled={loading || Boolean(successMsg)}
               />
             </FormField>
 
-            <FormField label="Password" required className="mb-2">
+            <FormField label="Kata Sandi" required className="mb-1">
               <Input
                 type="password"
+                id="admin-register-password"
+                name="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimal 6 karakter"
+                iconLeft={<Lock size={18} />}
+                className="auth-input-field"
                 required
-                disabled={loading}
+                disabled={loading || Boolean(successMsg)}
               />
             </FormField>
 
-            <FormField label="Konfirmasi Password" required className="mb-3">
+            {/* LIVE PASSWORD STRENGTH METER */}
+            {password && (
+              <div className="auth-strength-container">
+                <div className="auth-strength-bars">
+                  <div
+                    className={`auth-strength-segment ${passwordStrength.score >= 1 ? passwordStrength.classname : ""
+                      }`}
+                  />
+                  <div
+                    className={`auth-strength-segment ${passwordStrength.score >= 2 ? passwordStrength.classname : ""
+                      }`}
+                  />
+                  <div
+                    className={`auth-strength-segment ${passwordStrength.score >= 3 ? passwordStrength.classname : ""
+                      }`}
+                  />
+                </div>
+                <div className="auth-strength-text">
+                  <span>Kekuatan Kata Sandi:</span>
+                  <strong style={{ textTransform: "capitalize" }}>
+                    {passwordStrength.label}
+                  </strong>
+                </div>
+              </div>
+            )}
+
+            <FormField label="Konfirmasi Kata Sandi" required className="mb-3 mt-2">
               <Input
                 type="password"
+                id="admin-confirm-password"
+                name="confPassword"
+                autoComplete="new-password"
                 value={confPassword}
                 onChange={(e) => setConfPassword(e.target.value)}
-                placeholder="Ulangi password"
+                placeholder="Ulangi kata sandi di atas"
+                iconLeft={<KeyRound size={18} />}
+                className="auth-input-field"
                 required
-                disabled={loading}
+                disabled={loading || Boolean(successMsg)}
               />
+
+              {/* MATCH INDICATOR FEEDBACK */}
+              {confPassword && (
+                <div
+                  className={`auth-match-indicator ${isMatch ? "is-match" : "is-mismatch"
+                    }`}
+                >
+                  {isMatch ? (
+                    <>
+                      <Check size={14} />
+                      <span>Kata sandi cocok</span>
+                    </>
+                  ) : (
+                    <>
+                      <X size={14} />
+                      <span>Kata sandi belum cocok</span>
+                    </>
+                  )}
+                </div>
+              )}
             </FormField>
 
-            <div className="field mt-4 mb-0">
-              <Button
-                type="submit"
-                variant="primary"
-                isFullwidth={true}
-                isLoading={loading}
-                disabled={Boolean(successMsg)}
-              >
-                <span className="is-flex is-size-7 is-align-items-center is-justify-content-center" style={{ gap: "6px" }}>
-                  <UserPlus size={14} />
+            {/* SUBMIT BUTTON */}
+            <button
+              type="submit"
+              className="auth-submit-btn mt-3"
+              disabled={loading || Boolean(successMsg)}
+            >
+              {loading ? (
+                <>
+                  <span className="loader is-inline-block" style={{ width: "16px", height: "16px", borderWidth: "2px" }} />
+                  <span>Mendaftarkan Akun...</span>
+                </>
+              ) : successMsg ? (
+                <>
+                  <CheckCircle2 size={18} />
+                  <span>Registrasi Berhasil!</span>
+                </>
+              ) : (
+                <>
+                  <UserPlus size={18} />
                   <span>Daftar Sebagai Admin</span>
-                </span>
-              </Button>
-            </div>
+                </>
+              )}
+            </button>
           </form>
-        </div>
 
-        <footer className="card-footer py-2 has-background-white-ter has-text-centered">
-          <p className="is-size-7 has-text-grey" style={{ width: "100%" }}>
-            Sudah memiliki akun admin?{" "}
-            <Link to="/login" className="has-text-success-dark has-text-weight-semibold">
+          {/* FOOTER SWITCH TO LOGIN */}
+          <div className="auth-form-footer">
+            Sudah memiliki akun pengelola?
+            <Link to="/login" className="auth-switch-link">
               Masuk di sini
             </Link>
-          </p>
-        </footer>
+          </div>
+        </div>
       </div>
     </AuthLayout>
   );

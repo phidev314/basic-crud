@@ -163,21 +163,6 @@ const LandingPage = () => {
             className="is-flex is-align-items-center"
             style={{ gap: "8px", textDecoration: "none", color: "var(--ink)", display: "flex", alignItems: "center" }}
           >
-            <div
-              style={{
-                width: "36px",
-                height: "36px",
-                borderRadius: "8px",
-                background: "linear-gradient(135deg, var(--gold-accent), var(--gold-dark))",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#ffffff",
-                boxShadow: "0 4px 12px rgba(176, 141, 87, 0.3)",
-              }}
-            >
-              <Sparkles size={20} />
-            </div>
             <div>
               <span
                 style={{
@@ -295,7 +280,6 @@ const LandingPage = () => {
               gap: "6px",
             }}
           >
-            <Sparkles size={14} color="var(--gold-dark)" />
             <span
               style={{
                 fontSize: "0.75rem",

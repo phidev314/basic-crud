@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, ShieldCheck } from "lucide-react";
+import { Menu, Sparkles } from "lucide-react";
 import Sidebar from "../../organisms/Sidebar/Sidebar";
 import Breadcrumbs from "../../molecules/Breadcrumbs/Breadcrumbs";
 
@@ -42,21 +42,42 @@ const MainLayout = ({
       {/* Main Content Area */}
       <div className="app-main-content">
         {/* Mobile Topbar with Hamburger */}
-        <header className="mobile-topbar is-align-items-center is-justify-content-between">
+        <header className="mobile-topbar is-align-items-center is-justify-content-between px-3 py-2">
           <button
             type="button"
             className="button is-small is-light is-flex is-align-items-center is-justify-content-center"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             aria-label="Toggle Sidebar Menu"
-            style={{ borderRadius: "6px", width: "36px", height: "36px" }}
+            style={{ borderRadius: "8px", width: "36px", height: "36px" }}
           >
-            <Menu size={20} />
+            <Menu size={19} />
           </button>
 
-          <Link to="/dashboard" className="is-flex is-align-items-center">
-            <ShieldCheck size={20} className="mr-2" color="var(--gold-accent)" />
-            <span className="brand-title is-size-5 has-text-weight-bold" style={{ color: "var(--gold-dark)" }}>
-              Admin Panel
+          <Link to="/dashboard" className="is-flex is-align-items-center" style={{ gap: "8px", textDecoration: "none" }}>
+            <span
+              style={{
+                width: "28px",
+                height: "28px",
+                borderRadius: "7px",
+                background: "linear-gradient(135deg, var(--gold-accent), var(--gold-dark))",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+              }}
+            >
+              <Sparkles size={16} />
+            </span>
+            <span
+              className="brand-title is-size-6 has-text-weight-bold"
+              style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontSize: "1.2rem",
+                color: "var(--ink)",
+                letterSpacing: "0.5px",
+              }}
+            >
+              ATELIER
             </span>
           </Link>
 

@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 /**
- * @description - komponen input atomik dengan dukungan show/hide password toggle
+ * @description - komponen input atomik dengan dukungan icon prefix dan show/hide password toggle
  * @param {string} type - tipe input (text, password, email, number, dll)
  * @param {boolean} showToggle - menampilkan tombol toggle mata untuk tipe password (default: true)
+ * @param {React.ReactNode} iconLeft - icon elemen di sebelah kiri input
  */
 const Input = ({
   type = "text",
@@ -17,6 +18,8 @@ const Input = ({
   required = false,
   className = "",
   showToggle = true,
+  iconLeft = null,
+  style = {},
   ...props
 }) => {
   // state untuk toggle visibilitas karakter password
@@ -35,10 +38,21 @@ const Input = ({
     .filter(Boolean)
     .join(" ");
 
-  // jika tipe password dengan tombol toggle, bungkus dengan wrapper relative dan icon button
-  if (isPasswordType && showToggle) {
+  const combinedStyle = {
+    ...(iconLeft ? { paddingLeft: "2.65rem" } : {}),
+    ...(isPasswordType && showToggle ? { paddingRight: "2.5rem" } : {}),
+    ...style,
+  };
+
+  // jika memerlukan wrapper khusus (karena ada iconLeft atau toggle password)
+  if (iconLeft || (isPasswordType && showToggle)) {
     return (
-      <div className="control" style={{ position: "relative", width: "100%" }}>
+      <div className="control auth-input-wrapper" style={{ position: "relative", width: "100%" }}>
+        {iconLeft && (
+          <span className="auth-input-icon">
+            {iconLeft}
+          </span>
+        )}
         <input
           type={inputType}
           className={classNames}
@@ -47,33 +61,22 @@ const Input = ({
           placeholder={placeholder}
           disabled={disabled}
           required={required}
-          style={{ paddingRight: "2.5rem" }}
+          style={combinedStyle}
           {...props}
         />
-        <button
-          type="button"
-          onClick={() => setShowPassword((prev) => !prev)}
-          disabled={disabled}
-          tabIndex={-1}
-          style={{
-            position: "absolute",
-            right: "12px",
-            top: "50%",
-            transform: "translateY(-50%)",
-            background: "none",
-            border: "none",
-            cursor: disabled ? "not-allowed" : "pointer",
-            color: "var(--ink-soft, #7a7a7a)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 0,
-          }}
-          title={showPassword ? "Sembunyikan password" : "Lihat password"}
-          aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}
-        >
-          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-        </button>
+        {isPasswordType && showToggle && (
+          <button
+            type="button"
+            className="auth-password-toggle"
+            onClick={() => setShowPassword((prev) => !prev)}
+            disabled={disabled}
+            tabIndex={-1}
+            title={showPassword ? "Sembunyikan password" : "Lihat password"}
+            aria-label={showPassword ? "Sembunyikan password" : "Lihat password"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        )}
       </div>
     );
   }
@@ -87,6 +90,7 @@ const Input = ({
       placeholder={placeholder}
       disabled={disabled}
       required={required}
+      style={style}
       {...props}
     />
   );

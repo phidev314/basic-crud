@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import User from "../models/UserModel.js";
 import Address from "../models/AddressModel.js";
+import Role from "../models/RoleModel.js";
 import fs from "fs";
 import path from "path";
 
@@ -43,11 +44,17 @@ export const getUsers = async (req, res) => {
     // Eksekusi query dengan hitung total data
     const { count, rows } = await User.findAndCountAll({
       where: whereCondition,
+      attributes: { exclude: ["password"] },
       include: [
         {
           model: Address,
           as: "addresses",
           attributes: ["id", "label", "street", "city", "province", "postalCode", "isPrimary"],
+        },
+        {
+          model: Role,
+          as: "role",
+          attributes: ["id", "name", "description"],
         },
       ],
       order: [[sortField, sortOrder]],
@@ -71,13 +78,14 @@ export const getUsers = async (req, res) => {
   }
 };
 
-// get user by id (beserta data alamat / address yang berelasi)
+// get user by id (beserta data alamat / address dan role yang berelasi)
 export const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
     const user = await User.findOne({
       where: { id },
+      attributes: { exclude: ["password"] },
       include: [
         {
           model: Address,
@@ -86,6 +94,11 @@ export const getUserById = async (req, res) => {
             ["isPrimary", "DESC"],
             ["createdAt", "DESC"],
           ],
+        },
+        {
+          model: Role,
+          as: "role",
+          attributes: ["id", "name", "description"],
         },
       ],
     });
@@ -136,11 +149,19 @@ export const createUser = async (req, res) => {
       avatarPath = req.body.avatar.trim();
     }
 
+    const { roleId } = req.body;
+    let assignedRoleId = roleId ? parseInt(roleId, 10) : null;
+    if (!assignedRoleId) {
+      const defaultRole = await Role.findOne({ where: { name: "user" } });
+      if (defaultRole) assignedRoleId = defaultRole.id;
+    }
+
     const newUser = await User.create({
       name: name.trim(),
       email: email.trim(),
       gender: gender.trim(),
       avatar: avatarPath,
+      roleId: assignedRoleId,
     });
 
     // Jika disertakan alamat awal saat registrasi
@@ -156,12 +177,18 @@ export const createUser = async (req, res) => {
       });
     }
 
-    // Ambil data user lengkap dengan relasi alamat
+    // Ambil data user lengkap dengan relasi alamat dan role
     const fullUser = await User.findByPk(newUser.id, {
+      attributes: { exclude: ["password"] },
       include: [
         {
           model: Address,
           as: "addresses",
+        },
+        {
+          model: Role,
+          as: "role",
+          attributes: ["id", "name", "description"],
         },
       ],
     });
@@ -182,10 +209,10 @@ export const createUser = async (req, res) => {
   }
 };
 
-// update user (mendukung upload avatar baru & update informasi)
+// update user (mendukung upload avatar baru, perubahan role & update informasi)
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, gender } = req.body;
+  const { name, email, gender, roleId } = req.body;
 
   try {
     const user = await User.findByPk(id);
@@ -227,13 +254,20 @@ export const updateUser = async (req, res) => {
       email: email !== undefined ? email.trim() : user.email,
       gender: gender !== undefined ? gender.trim() : user.gender,
       avatar: updatedAvatar,
+      roleId: roleId !== undefined ? parseInt(roleId, 10) : user.roleId,
     });
 
     const updatedUser = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
       include: [
         {
           model: Address,
           as: "addresses",
+        },
+        {
+          model: Role,
+          as: "role",
+          attributes: ["id", "name", "description"],
         },
       ],
     });

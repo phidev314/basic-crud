@@ -25,8 +25,31 @@ export const verifyToken = (req, res, next) => {
         msg: "Sesi Anda telah berakhir atau token tidak valid. Silakan login kembali.",
       });
     }
-    // menyimpan informasi user yang login ke dalam req.admin
+    // menyimpan informasi user yang login ke dalam req.user dan req.admin (untuk backward compatibility)
+    req.user = decoded;
     req.admin = decoded;
     next();
   });
 };
+
+// middleware untuk membatasi akses berdasarkan role pengguna (RBAC)
+export const authorizeRoles = (...allowedRoles) => {
+  return (req, res, next) => {
+    if (!req.user || !req.user.role) {
+      return res.status(403).json({
+        msg: "Akses ditolak: Informasi hak akses (role) tidak valid.",
+      });
+    }
+
+    const userRole = typeof req.user.role === "string" ? req.user.role : req.user.role?.name;
+
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({
+        msg: `Akses ditolak: Role '${userRole}' tidak memiliki izin untuk tindakan ini.`,
+      });
+    }
+
+    next();
+  };
+};
+
