@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
+import os from "os";
 import db from "./config/Database.js";
 
 // import model agar relasi tabel (associations) terdaftar ke sequelize
@@ -56,7 +57,10 @@ app.use(express.json()); // membaca payload request berformat json
 app.use(express.urlencoded({ extended: true })); // membaca form-data url encoded
 
 // menyajikan folder uploads sebagai file statis untuk akses gambar foto profil & produk
-app.use("/uploads", express.static(path.resolve("uploads")));
+const uploadsStaticDir = process.env.VERCEL
+  ? path.join(os.tmpdir(), "uploads")
+  : path.resolve("uploads");
+app.use("/uploads", express.static(uploadsStaticDir));
 
 // endpoint kesehatan / root untuk pengecekan status server
 app.get("/", (req, res) => {

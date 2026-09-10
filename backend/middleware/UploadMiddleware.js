@@ -1,16 +1,25 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import os from "os";
 
 // memastikan direktori uploads/users dan uploads/products tersedia
-const userUploadDir = path.resolve("uploads/users");
-if (!fs.existsSync(userUploadDir)) {
-  fs.mkdirSync(userUploadDir, { recursive: true });
-}
+// di Vercel serverless, filesystem bersifat read-only sehingga gunakan os.tmpdir()
+const baseUploadDir = process.env.VERCEL
+  ? path.join(os.tmpdir(), "uploads")
+  : path.resolve("uploads");
+const userUploadDir = path.join(baseUploadDir, "users");
+const productUploadDir = path.join(baseUploadDir, "products");
 
-const productUploadDir = path.resolve("uploads/products");
-if (!fs.existsSync(productUploadDir)) {
-  fs.mkdirSync(productUploadDir, { recursive: true });
+try {
+  if (!fs.existsSync(userUploadDir)) {
+    fs.mkdirSync(userUploadDir, { recursive: true });
+  }
+  if (!fs.existsSync(productUploadDir)) {
+    fs.mkdirSync(productUploadDir, { recursive: true });
+  }
+} catch (err) {
+  console.warn("Warning creating upload directory:", err.message);
 }
 
 // konfigurasi penyimpanan disk multer untuk avatar user
