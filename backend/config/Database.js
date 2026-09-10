@@ -10,16 +10,24 @@ const dbPass = process.env.DB_PASS;
 const dbHost = process.env.DB_HOST;
 const dbPort = process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3306;
 
+const isSSL =
+  process.env.DB_SSL === "true" ||
+  process.env.DB_SSL === "1" ||
+  dbPort === 4000;
+
 // inisialisasi instance sequelize orm untuk koneksi ke database mysql
 const db = new Sequelize(dbName, dbUser, dbPass, {
   host: dbHost,
   port: dbPort,
   dialect: "mysql",
-  dialectOptions: process.env.DB_SSL === "true" ? {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  } : {},
+  dialectOptions: isSSL
+    ? {
+        ssl: {
+          minVersion: "TLSv1.2",
+          rejectUnauthorized: false,
+        },
+      }
+    : {},
 });
 
 export default db;
