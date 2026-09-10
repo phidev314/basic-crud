@@ -5,7 +5,6 @@ import {
   Users,
   Package,
   LogOut,
-  Sparkles,
 } from "lucide-react";
 import { authService } from "../../../services";
 

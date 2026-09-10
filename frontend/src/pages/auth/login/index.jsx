@@ -6,7 +6,6 @@ import {
   Mail,
   Lock,
   ArrowLeft,
-  Sparkles,
   Package,
   AlertCircle,
   X,

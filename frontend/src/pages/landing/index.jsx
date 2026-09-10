@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   ShoppingBag,
   Package,
-  Sparkles,
   ShieldCheck,
   Truck,
   LogIn,

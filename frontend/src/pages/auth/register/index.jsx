@@ -8,7 +8,6 @@ import {
   Lock,
   KeyRound,
   ArrowLeft,
-  Sparkles,
   CheckCircle2,
   AlertCircle,
   X,
