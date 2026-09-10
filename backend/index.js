@@ -58,6 +58,15 @@ app.use(express.urlencoded({ extended: true })); // membaca form-data url encode
 // menyajikan folder uploads sebagai file statis untuk akses gambar foto profil & produk
 app.use("/uploads", express.static(path.resolve("uploads")));
 
+// endpoint kesehatan / root untuk pengecekan status server
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Healthy",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // mendaftarkan endpoint routes ke aplikasi express
 app.use(AuthRoute);
 app.use(DashboardRoute);
