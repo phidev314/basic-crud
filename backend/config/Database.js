@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize";
+import mysql2 from "mysql2";
 import dotenv from "dotenv";
 
 dotenv.config(); // untuk membaca file .env dan environment variables di dalamnya
@@ -20,6 +21,7 @@ const db = new Sequelize(dbName, dbUser, dbPass, {
   host: dbHost,
   port: dbPort,
   dialect: "mysql",
+  dialectModule: mysql2, // memberitahu Vercel bundler untuk menyertakan modul mysql2
   dialectOptions: isSSL
     ? {
         ssl: {
