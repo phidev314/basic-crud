@@ -66,5 +66,9 @@ app.use(AddressRoute);
 app.use(ProductRoute);
 app.use(ProductCategoryRoute);
 
-// menjalankan server backend pada port yang ditentukan
-app.listen(PORT, () => console.log(`Server up and running on port ${PORT}...`));
+// menjalankan server backend pada port yang ditentukan (hanya saat berjalan mandiri/lokal)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => console.log(`Server up and running on port ${PORT}...`));
+}
+
+export default app;
