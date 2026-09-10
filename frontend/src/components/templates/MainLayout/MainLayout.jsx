@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Sparkles } from "lucide-react";
+import { Menu } from "lucide-react";
 import Sidebar from "../../organisms/Sidebar/Sidebar";
 import Breadcrumbs from "../../molecules/Breadcrumbs/Breadcrumbs";
 
@@ -54,20 +54,6 @@ const MainLayout = ({
           </button>
 
           <Link to="/dashboard" className="is-flex is-align-items-center" style={{ gap: "8px", textDecoration: "none" }}>
-            <span
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "7px",
-                background: "linear-gradient(135deg, var(--gold-accent), var(--gold-dark))",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-              }}
-            >
-              <Sparkles size={16} />
-            </span>
             <span
               className="brand-title is-size-6 has-text-weight-bold"
               style={{
