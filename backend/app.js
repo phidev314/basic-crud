@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import path from "path";
 import os from "os";
 import db from "./config/Database.js";
+import { setupSwagger } from "./config/swagger.js";
+
 
 // import model agar relasi tabel (associations) terdaftar ke sequelize
 import Role from "./models/RoleModel.js";
@@ -70,6 +72,9 @@ app.get("/", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// swagger api documentation
+setupSwagger(app);
 
 // mendaftarkan endpoint routes ke aplikasi express
 app.use(AuthRoute);
