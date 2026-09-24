@@ -28,6 +28,10 @@ const options = {
         url: "http://localhost:8000",
         description: "Local Server",
       },
+      {
+        url: "https://basic-crud-backend-fawn.vercel.app",
+        description: "Production Server",
+      },
     ],
   },
   apis: ["./routes/*.js"],
